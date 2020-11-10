@@ -1,51 +1,38 @@
-setInterval(() => {
-    if ($("ytd-app") && $("ytd-app").length) {
-        
-        // Close banner in youtube video
-        $('.close-padding') && $('.close-padding').click();
-        $('.ytp-ad-overlay-close-button') && $('.ytp-ad-overlay-close-button').click();
-    
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-        // Remove youtube hero Ad banner
-        $("ytd-video-masthead-ad-renderer") && $("ytd-video-masthead-ad-renderer").remove();
-        $("#masthead-ad") && $("#masthead-ad").remove()
+if (!document.pictureInPictureEnabled) {
+  chrome.browserAction.setTitle({ title: 'Picture-in-Picture NOT supported' });
+} else {
+  chrome.browserAction.onClicked.addListener(tab => {
+    chrome.tabs.executeScript({ file: 'script.js', allFrames: true });
+  });
+}
 
-        // Skip advertisement
-        $(".videoAdUiSkipButton") && $(".videoAdUiSkipButton").click();
-        $(".ytp-ad-skip-button") && $(".ytp-ad-skip-button").click();
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-134864766-1']);
 
-    
-        // Remove legacy Ad near youtube videos
-        $(".ytd-companion-slot-renderer") && $(".ytd-companion-slot-renderer").remove();
+chrome.runtime.onMessage.addListener(data => {
+  if (data.message === 'enter')
+    _gaq.push(['_trackPageview']);
+});
 
-
-        // $(".ytp-ad-preview-text") && $(".ytp-ad-preview-text").length &&  window.location.reload()
-
-    }
-
-    // Remove the google Ads from all websites, mostly won't work
-    $("div[id^=google_ads_iframe]") && $("div[id^=google_ads_iframe]").remove()
-
-    // Remove gmail Ad banners
-    $(".aKB") && $(".aKB").remove()
-    
-    // Remove Quora Ad banners
-    $('.home_feed_ad').css("display", "none")
-
-    // Remove quora sponsored content
-    $("div[color='gray_light']:contains('Sponsored by')").parent().parent().parent().hide()
-    $("div[color='gray_light']:contains('Promoted by')").parent().parent().parent().hide()
-
-    // Remove "Questions for you", "Discover People", "Discover topics" section in quora
-    $('.QuestionStoryBundle').remove()
-    $('.SuggestedTribesBundle').remove()
-    $('.SuggestedUsersBundle').remove()
-    $('.SuggestedTopicsBundle').remove()
-
-   // Remove facebook sponsored Ads
-$("a:contains('Sponsored')").closest("div[id^='hyperfeed_story_id']").remove()
-
-   // Remove twitter promoted contents
-$('span:contains("Promoted")').parent().parent().parent().parent().parent().parent().remove()
-
-}, 500);
+chrome.storage.sync.get({ optOutAnalytics: false }, results => {
+  if (results.optOutAnalytics) {
+    return;
+  }
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+});
